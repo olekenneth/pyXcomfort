@@ -68,26 +68,24 @@ class TestXcomfort(unittest.TestCase):
         s._state = True
         s._value = 21.3
         s._serial = 5620933
-        sensor = self.instance.parseSensor(data, s)
-        self.assertEqual(s, sensor)
+        sensor = self.instance.parseSensor(data, Sensor())
+        self.assertEqual(s.state, sensor.state)
+        self.assertEqual(s._value, sensor._value)
 
     def test_parseSwitch(self):
         data = bytearray(b'\x5a\x1b\x03\x55\x00\x13\x17\x10\x04\x01\xfd\x6d\x20\x00\x00\x5b\x00\x00E\xbe\x00\xa5')
-        s = Switch()
-        switch = self.instance.parseSwitch(data, s)
-        s._state = True
-        s._buttons = 1
-        s._serial = 2125309
-        self.assertEqual(s, switch)
+        switch = self.instance.parseSwitch(data, Switch())
+        self.assertEqual(True, switch.state)
+        self.instance.parse(data)
+        switches = self.instance.switches
+        self.assertEqual(len(switches), 1)
+
 
     def test_parseLight(self):
         lightData = bytearray(b'\x5a\x24\x03\x70\x00\x1c\x1b\xa0\x3f\x00\x66\x62\x24\x00\x00\x80\x00\x00\x00\xf0\x00\x11\x03\x00\x2d\x24\x6a\x00\x42\x02\x4a\x61\x39\x62\xfd\xa5')
-        l = Light()
-        light = self.instance.parseLight(lightData, l)
-        l._state = True
-        l._serial = 2384486
-        l._isDimable = True
-        self.assertEqual(l, light)
+        light = self.instance.parseLight(lightData, Light())
+        self.assertEqual(False, light._isDimable)
+        self.assertEqual(True, light.state)
 
     def test_appendDevice(self):
         s = Sensor()
@@ -96,7 +94,7 @@ class TestXcomfort(unittest.TestCase):
         s._serial = 2384486
         self.instance._appendDevice(s)
 
-        self.assertEqual(len(self.instance.devices[Sensor]), 1)
+        self.assertEqual(len(self.instance.sensors), 1)
 
     def test_find(self):
         l = Light()
@@ -115,9 +113,15 @@ class TestXcomfort(unittest.TestCase):
     def test_callbacks(self):
         switchData = bytearray(b'\x5a\x1b\x03\x55\x00\x13\x17\x10\x04\x01\xfd\x6d\x20\x00\x00\x5b\x00\x00E\xbe\x00\xa5')
         lightData = bytearray(b'\x5a\x24\x03\x70\x00\x1c\x1b\xa0\x3f\x00\x66\x62\x24\x00\x00\x80\x00\x00\x00\xf0\x00\x11\x00\x00\x2d\x24\x6a\x00\x42\x02\x4a\x61\x39\x62\xfd\xa5')
+        sensorData = bytearray(b'Z \x03c\x00\x18\x18"\x04\x00\x14\xd0\x1f\x00\x00\xc5\xc4U\x00\x17\x00\xd5\x00\xff\xff\xf3\xa4\x89\xdb\x17\xfd\xa5')
+
 
         def switchCallback(switch):
             self.assertEqual(2125309, switch._serial)
+
+        def sensorCallback(sensor):
+            self.assertEqual(5620933, sensor._serial)
+            self.assertEqual(21.3, sensor._value)
 
         def lightCallback(light):
             self.assertEqual(2384486, light._serial)
@@ -129,8 +133,10 @@ class TestXcomfort(unittest.TestCase):
         def secondLightChangeCallback(light):
             self.assertEqual(2384482, light._serial)
 
+        self.instance.onSensor(sensorCallback)
         self.instance.onSwitch(switchCallback)
         self.instance.onLight(lightCallback)
+        self.instance.parse(sensorData)
         self.instance.parse(switchData)
         self.instance.parse(switchData)
         self.instance.parse(lightData)
@@ -191,3 +197,9 @@ class TestXcomfort(unittest.TestCase):
         myInstance = Xcomfort(serialPort)
         myInstance.readerShutdown = True
         myInstance.writerShutdown = True
+
+
+    def test_requestStateForAllLights(self):
+        l = Light()
+        self.instance._appendDevice(l)
+        self.instance.requestStateForAllLights._original(self.instance)

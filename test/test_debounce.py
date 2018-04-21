@@ -15,3 +15,10 @@ class TestDebounce(unittest.TestCase):
         myprint('message 5')
         myprint('message 6')
         myprint('message 7')
+
+    def test_debounceNow(self):
+        @debounce(0)
+        def myprint(message):
+            print(message)
+
+        myprint('message 1')

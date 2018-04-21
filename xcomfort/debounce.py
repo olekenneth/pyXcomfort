@@ -12,7 +12,7 @@ def debounce(wait):
                 debounced.t.cancel()
             except(AttributeError):
                 pass
-
+            debounced._original = fn
             debounced.t = Timer(wait, call_it)
             debounced.t.start()
         return debounced
