@@ -10,7 +10,7 @@ install:
   - pip install -r requirements_test.txt
 
 script:
-  - python -m pytest test/ --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
+  - python -m pytest --doctest-modules -v --cov xcomfort --cov-report term-missing
 
 after_success:
   - coveralls
