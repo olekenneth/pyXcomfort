@@ -2,6 +2,18 @@ import unittest
 from xcomfort.xcomfort import *
 
 
+class SerialPortMock(unittest.TestCase):
+    def write(self, message):
+        self.assertEqual(type(message), bytearray)
+
+    def read(self, length):
+        self.assertEqual(length, 1)
+        return bytearray(b'\x5a\x1b\x03\x55\x00\x13\x17\x10\x04\x01\xfd\x6d\x20\x00\x00\x5b\x00\x00E\xbe\x00\xa5')
+
+    @property
+    def in_waiting(self):
+        return 1
+
 class TestXcomfort(unittest.TestCase):
     def setup_method(self, test_method):
         self.instance = Xcomfort()
@@ -120,6 +132,7 @@ class TestXcomfort(unittest.TestCase):
         self.instance.onSwitch(switchCallback)
         self.instance.onLight(lightCallback)
         self.instance.parse(switchData)
+        self.instance.parse(switchData)
         self.instance.parse(lightData)
 
         light = Light()
@@ -149,3 +162,32 @@ class TestXcomfort(unittest.TestCase):
 
     def test_bougusData(self):
         self.assertEqual(self.instance.parse(bytearray(b'\x5a\xff\x1b')), None)
+
+    def test_setState(self):
+        with self.assertRaises(TypeError):
+            self.instance.setState(None, 'test')
+
+        serial = bytearray()
+        def sendCommandMock(serialAsByte, state):
+            self.assertEqual(serialAsByte, serial)
+
+        self.instance.sendCommand = sendCommandMock
+        self.instance.setState(serial, True)
+        self.instance.setState(serial, False)
+
+    def test_setBrigtness(self):
+        def sendDimCommandMock(serialAsByte, state):
+            self.assertEqual(state, b'\xff')
+        def setStateMock(serialAsByte, state):
+            self.assertEqual(state, False)
+
+        self.instance.setState = setStateMock
+        self.instance.sendDimCommand = sendDimCommandMock
+        self.instance.setBrightness(bytearray(), 255)
+        self.instance.setBrightness(bytearray(), 0)
+
+    def test_threads(self):
+        serialPort = SerialPortMock()
+        myInstance = Xcomfort(serialPort)
+        myInstance.readerShutdown = True
+        myInstance.writerShutdown = True

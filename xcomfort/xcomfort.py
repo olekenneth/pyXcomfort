@@ -117,16 +117,18 @@ class Xcomfort():
             for message in self.startUpMessages:
                 self.messages.append(bytearray(bytes.fromhex(message)))
 
+            self.readerShutdown = False
             self.readerThread = threading.Thread(target=self.read, name='rx')
             self.readerThread.daemon = True
             self.readerThread.start()
 
+            self.writerShutdown = False
             self.writerThread = threading.Thread(target=self.write, name='tx')
             self.writerThread.daemon = True
             self.writerThread.start()
 
     def write(self):
-        while True:
+        while not self.writerShutdown:
             time.sleep(.01)
             if len(self.messages) > 0:
                 message = self.messages.pop(0)
@@ -137,7 +139,7 @@ class Xcomfort():
     def read(self):
         bytes = bytearray()
         try:
-            while True:
+            while not self.readerShutdown:
                 time.sleep(.01)
                 byte = self.serialPort.read(self.serialPort.in_waiting or 1)
                 if byte:
@@ -145,8 +147,8 @@ class Xcomfort():
                     if byte[-1:] == b'\xa5':
                         self.parse(bytes)
                         bytes = bytearray()
-        except:
-            print('Exception happen in read thread')
+        except Exception as e:
+            print('Exception happen in read thread', e)
 
     def parseType(self, data):
         parsedType = None
