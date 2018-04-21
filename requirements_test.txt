@@ -1,0 +1,6 @@
+attrs==17.4.0
+pytest==3.5.0
+PyCRC==1.21
+pytest-cov==2.5.1
+pyserial==3.4
+python-coveralls==2.9.1

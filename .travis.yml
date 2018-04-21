@@ -7,7 +7,10 @@ python:
 sudo: false
 
 install:
-  - pip install -r requirements.txt
+  - pip install -r requirements_test.txt
 
 script:
-  - python -m pytest --cov-report html --cov-report annotate --cov=xcomfort
+  - python -m pytest test/ --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
+
+after_success:
+  - coveralls

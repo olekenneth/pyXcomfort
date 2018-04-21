@@ -1,5 +1,6 @@
 # pyXcomfort
 [![Build Status](https://travis-ci.org/olekenneth/pyXcomfort.svg?branch=master)](https://travis-ci.org/olekenneth/pyXcomfort)
+[![Coverage Status](https://coveralls.io/repos/github/olekenneth/pyXcomfort/badge.svg?branch=master)](https://coveralls.io/github/olekenneth/pyXcomfort?branch=master)
 
 This is a Python library for controlling Moeller Eaton Xcomfort lights.
 It require the RS-232 programming interface.
