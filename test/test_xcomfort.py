@@ -203,3 +203,20 @@ class TestXcomfort(unittest.TestCase):
         l = Light()
         self.instance._appendDevice(l)
         self.instance.requestStateForAllLights._original(self.instance)
+
+    def test_read(self):
+        serialPort = SerialPortMock()
+        myInstance = Xcomfort(serialPort)
+        def parseMock(bytes):
+            myInstance.readerShutdown = True
+            self.assertEqual(bytes, bytearray(b'\x5a\x1b\x03\x55\x00\x13\x17\x10\x04\x01\xfd\x6d\x20\x00\x00\x5b\x00\x00E\xbe\x00\xa5'))
+
+        def parseMockException(bytes):
+            raise Exception('This is an exception')
+
+        myInstance.parse = parseMock
+        myInstance.read()
+
+        myInstance.readerShutdown = False
+        myInstance.parse = parseMockException
+        myInstance.read()
