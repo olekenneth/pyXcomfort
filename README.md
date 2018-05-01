@@ -25,6 +25,7 @@ light = xcomfort.lights[0]
 light.onChange(lightChangeCallback)
 light.state = False   # turn off the light
 light.brightness = 25 # turn light on and set brightness to 25%
+```
 
 ### Callback when one of the lights change
 ```python
