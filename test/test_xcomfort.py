@@ -166,6 +166,17 @@ class TestXcomfort(unittest.TestCase):
         self.assertEqual(len(self.instance.lights), 4)
         self.assertEqual(self.instance.lights[3].name, 'lamp-2384484')
 
+    def test_setSwitches(self):
+        self.instance.switches = [
+            { 'name': 'Living room', 'serial': 5109324 }
+        ]
+        self.assertEqual(len(self.instance.switches), 1)
+        self.assertEqual(type(self.instance.switches[0]), Switch)
+
+        self.instance.switches = [ 5109325 ]
+        self.assertEqual(len(self.instance.switches), 2)
+        self.assertEqual(self.instance.switches[1].name, 'switch-5109325')
+
     def test_bougusData(self):
         self.assertEqual(self.instance.parse(bytearray(b'\x5a\xff\x1b')), None)
 
