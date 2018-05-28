@@ -5,7 +5,7 @@ from xcomfort.crc import Crc
 from xcomfort.convert import Convert
 from xcomfort.devices import *
 from xcomfort.debounce import debounce
-import collections
+from collections import OrderedDict
 
 class Xcomfort():
     messages = []
@@ -30,9 +30,9 @@ class Xcomfort():
     def lights(self, lightsConfig):
         for lightConfig in lightsConfig:
             light = Light(self)
-            if type(lightConfig) == dict or type(lightConfig) == collections.OrderedDict:
+            if type(lightConfig) == dict or type(lightConfig) == OrderedDict:
                 serial = lightConfig['serial']
-                name  = lightConfig['name'] or 'lamp-' + serial
+                name = lightConfig['name'] or 'lamp-' + str(serial)
             elif type(lightConfig) == int:
                 serial = lightConfig
                 name = 'lamp-' + str(serial)
@@ -49,6 +49,21 @@ class Xcomfort():
     @property
     def switches(self):
         return self.devices[Switch]
+
+    @switches.setter
+    def switches(self, switchesConfig):
+        for switchConfig in switchesConfig:
+            switch = Switch(self)
+            if type(switchConfig) == dict or type(switchConfig) == OrderedDict:
+                serial = switchConfig['serial']
+                name = switchConfig['name'] or 'switch-' + str(serial)
+            elif type(switchConfig) == int:
+                serial = switchConfig
+                name = 'switch-' + str(serial)
+            switch._name = name
+            switch._serial = serial
+            switch._serialAsBytes = Convert.intToBytes(serial, byteorder='little', length=4)
+            self._appendDevice(switch)
 
     def setState(self, serial, state):
         if type(state) != bool:
