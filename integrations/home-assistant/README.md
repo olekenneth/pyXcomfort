@@ -3,23 +3,29 @@
 ## Run commands
 ```bash
 # Make directories
-mkdir -p ~/.homeassistant/custom_components/light
+mkdir -p ~/.homeassistant/custom_components/
 
 # Change to correct directory
-cd ~/.homeassistant/custom_components/light
+cd ~/.homeassistant/custom_components/
 
 # Checkout repo
 git clone git@github.com:olekenneth/pyXcomfort.git
 
+# PIP install local version
+pip install ./pyXcomfort
+
 # Symlink integration
-ln -s pyXcomfort/integrations/home-assistant/xcomfort.py
+ln -s pyXcomfort/integrations/home-assistant/* .
 ```
 
 ## Add Xcomfort configuration.yaml
 ```yaml
-light:
-- platform: xcomfort
+xcomfort:
   device: /dev/ttyUSB0 # default
+  timeout: 10 # For how many seconds the binary sensor to be "on" after a button push. Default 240
+  switches:
+    - serial: 5109324
+      name: Wallswitch Livingroom
   devices:
     - serial: 2118499
       name: Pendel
