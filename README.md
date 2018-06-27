@@ -6,7 +6,7 @@
 This is a **unofficial** Python library for controlling Moeller Eaton Xcomfort lights.
 It requires the RS-232 programming interface. 
 
-This repository is not associated with Moeller Eaton, Home Assistant or other [implementations](/integrations).
+This repository is not associated with Moeller Eaton, Home Assistant or other [integrations](/integrations).
 
 ## How to use
 
