@@ -1,7 +1,6 @@
 import unittest
 from xcomfort.xcomfort import *
 
-
 class SerialPortMock(unittest.TestCase):
     def write(self, message):
         self.assertEqual(type(message), bytearray)
@@ -80,7 +79,6 @@ class TestXcomfort(unittest.TestCase):
         switches = self.instance.switches
         self.assertEqual(len(switches), 1)
 
-
     def test_parseLight(self):
         lightData = bytearray(b'\x5a\x24\x03\x70\x00\x1c\x1b\xa0\x3f\x00\x66\x62\x24\x00\x00\x80\x00\x00\x00\xf0\x00\x11\x03\x00\x2d\x24\x6a\x00\x42\x02\x4a\x61\x39\x62\xfd\xa5')
         light = self.instance.parseLight(lightData, Light())
@@ -153,7 +151,6 @@ class TestXcomfort(unittest.TestCase):
         light.onChange(secondLightChangeCallback)
         light.state = True
 
-
     def test_setLights(self):
         self.instance.lights = [
             { 'name': 'Plafond', 'serial': 2384481 },
@@ -208,7 +205,6 @@ class TestXcomfort(unittest.TestCase):
         myInstance = Xcomfort(serialPort)
         myInstance.readerShutdown = True
         myInstance.writerShutdown = True
-
 
     def test_requestStateForAllLights(self):
         l = Light()
