@@ -6,14 +6,14 @@ def debounce(wait):
         have elapsed since the last time it was invoked. """
     def decorator(fn):
         def debounced(*args, **kwargs):
-            def call_it():
+            def callIt():
                 fn(*args, **kwargs)
             try:
                 debounced.t.cancel()
-            except(AttributeError):
+            except AttributeError:
                 pass
-            debounced._original = fn
-            debounced.t = Timer(wait, call_it)
+            debounced.originalFn = fn
+            debounced.t = Timer(wait, callIt)
             debounced.t.start()
         return debounced
     return decorator
