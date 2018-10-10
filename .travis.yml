@@ -11,6 +11,7 @@ install:
 
 script:
   - python -m pytest test/ --doctest-modules -v --cov xcomfort --cov-report term-missing
+  - python -m pylint --errors-only --rcfile .pylint.rc xcomfort/*
 
 after_success:
   - coveralls
