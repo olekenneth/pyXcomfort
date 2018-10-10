@@ -209,7 +209,7 @@ class TestXcomfort(unittest.TestCase):
     def test_requestStateForAllLights(self):
         l = Light()
         self.instance._appendDevice(l)
-        self.instance.requestStateForAllLights._original(self.instance)
+        self.instance.requestStateForAllLights.originalFn(self.instance)
 
     def test_read(self):
         serialPort = SerialPortMock()

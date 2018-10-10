@@ -1,7 +1,7 @@
 from xcomfort.convert import Convert
 
 class Device():
-    def __init__(self, xcomfort = None):
+    def __init__(self, xcomfort=None):
         self._state = False
         self._serial = 0
         self._serialAsBytes = bytearray()
@@ -78,7 +78,7 @@ class Sensor(Device):
         self._deviceType = value
 
 class Switch(Device):
-    def __init__(self, xcomfort = None):
+    def __init__(self, xcomfort=None):
         super().__init__(xcomfort)
         self._buttons = 0
 
@@ -100,7 +100,7 @@ class Switch(Device):
         self._buttons = value
 
 class Light(Device):
-    def __init__(self, xcomfort = None):
+    def __init__(self, xcomfort=None):
         super().__init__(xcomfort)
         self._isDimable = True
         self._brightness = 0
