@@ -1,11 +1,10 @@
-from enum import Enum
 import threading
 import time
+from collections import OrderedDict
 from xcomfort.crc import Crc
 from xcomfort.convert import Convert
-from xcomfort.devices import *
+from xcomfort.devices import Light, Sensor, Switch
 from xcomfort.debounce import debounce
-from collections import OrderedDict
 
 class Xcomfort():
     messages = []
@@ -30,15 +29,14 @@ class Xcomfort():
     def lights(self, lightsConfig):
         for lightConfig in lightsConfig:
             light = Light(self)
-            if type(lightConfig) == dict or type(lightConfig) == OrderedDict:
+            if isinstance(lightConfig, (OrderedDict, dict)):
                 serial = lightConfig['serial']
                 name = lightConfig['name'] or 'lamp-' + str(serial)
-            elif type(lightConfig) == int:
+            elif isinstance(lightConfig, int):
                 serial = lightConfig
                 name = 'lamp-' + str(serial)
-            light._name = name
-            light._serial = serial
-            light._serialAsBytes = Convert.intToBytes(serial, byteorder='little', length=4)
+            light.name = name
+            light.serial = serial
             self._appendDevice(light)
             light.requestState()
 
@@ -54,41 +52,40 @@ class Xcomfort():
     def switches(self, switchesConfig):
         for switchConfig in switchesConfig:
             switch = Switch(self)
-            if type(switchConfig) == dict or type(switchConfig) == OrderedDict:
+            if isinstance(switchConfig, (OrderedDict, dict)):
                 serial = switchConfig['serial']
                 name = switchConfig['name'] or 'switch-' + str(serial)
-            elif type(switchConfig) == int:
+            elif isinstance(switchConfig, int):
                 serial = switchConfig
                 name = 'switch-' + str(serial)
-            switch._name = name
-            switch._serial = serial
-            switch._serialAsBytes = Convert.intToBytes(serial, byteorder='little', length=4)
+            switch.name = name
+            switch.serial = serial
             self._appendDevice(switch)
 
     def setState(self, serial, state):
-        if type(state) != bool:
+        if not isinstance(state, bool):
             raise TypeError('State should be True/False')
-        command = b'\x50' if state == True else b'\x51'
-        self.sendCommand(serial, command)
+        command = b'\x50' if state is True else b'\x51'
+        self._sendCommand(serial, command)
 
     def setBrightness(self, serial, brightness):
-        if (brightness > 1):
+        if brightness > 1:
             command = Convert.intToBytes(brightness, length=1)
-            self.sendDimCommand(serial, command)
+            self._sendDimCommand(serial, command)
         else:
             self.setState(serial, False)
 
     def requestState(self, serial):
-        self.sendCommand(serial, b'\x70')
+        self._sendCommand(serial, b'\x70')
 
     @debounce(3)
     def requestStateForAllLights(self):
         for light in self.devices[Light]:
-            self.requestState(light._serialAsBytes)
+            self.requestState(light.serialAsBytes)
 
     def find(self, device):
         deviceType = type(device)
-        return next((d for d in self.devices[deviceType] if d._serial == device._serial), None)
+        return next((j for j in self.devices[deviceType] if j.serial == device.serial), None)
 
     def _appendDevice(self, device):
         deviceType = type(device)
@@ -110,7 +107,7 @@ class Xcomfort():
     def onSensor(self, callback):
         self._callbacks[Sensor].append(callback)
 
-    def __init__(self, serialPort = None, devicePath = None):
+    def __init__(self, serialPort=None, devicePath=None):
         self.devices = {
             Light: [],
             Sensor: [],
@@ -145,25 +142,25 @@ class Xcomfort():
     def write(self):
         while not self.writerShutdown:
             time.sleep(.01)
-            if len(self.messages) > 0:
+            if self.messages:
                 message = self.messages.pop(0)
-                if (message):
+                if message:
                     self.serialPort.write(message)
                     time.sleep(0.5)
 
     def read(self):
-        bytes = bytearray()
+        readBytes = bytearray()
         try:
             while not self.readerShutdown:
                 time.sleep(.01)
                 byte = self.serialPort.read(self.serialPort.in_waiting or 1)
                 if byte:
-                    bytes += byte
+                    readBytes += byte
                     if byte[-1:] == b'\xa5':
-                        self.parse(bytes)
-                        bytes = bytearray()
-        except Exception as e:
-            print('Exception happen in read thread', e)
+                        self.parse(readBytes)
+                        readBytes = bytearray()
+        except Exception as ex:
+            print('Exception happen in read thread', ex)
 
     def parseType(self, data):
         parsedType = None
@@ -172,34 +169,35 @@ class Xcomfort():
             parsedType = Switch(self)
         elif length == b'\x20': # temp. sensor
             parsedType = Sensor(self)
-            parsedType._deviceType = 'temperature'
+            parsedType.deviceType = 'temperature'
         elif length == b'\x17' or length == b'\x24': # light on/off
             parsedType = Light(self)
         elif length == b'\x19': # light dim
             parsedType = Light(self)
         return parsedType
 
-    def parseSerial(self, byteArray, device):
+    @staticmethod
+    def parseSerial(byteArray, device):
         deviceType = type(device)
 
         if deviceType == Switch:
-            bytes = byteArray[10:14]
+            serialAsBytes = byteArray[10:14]
         elif deviceType == Sensor:
-            bytes = byteArray[15:19]
+            serialAsBytes = byteArray[15:19]
         elif deviceType == Light:
-            bytes = byteArray[10:14]
+            serialAsBytes = byteArray[10:14]
 
-        serial = Convert.bytesToInt(bytes, byteorder='big')
-        device._serialAsBytes = bytes
-        device._serial = serial
+        serial = Convert.bytesToInt(serialAsBytes, byteorder='big')
+        # device.serialAsBytes = serialAsBytes
+        device.serial = serial
 
-        return serial
+        return device
 
     def parse(self, data):
         device = self.parseType(data)
         if not device:
             return
-        serial = self.parseSerial(data, device)
+        device = self.parseSerial(data, device)
         result = self.find(device)
         if result:
             device = result
@@ -211,17 +209,17 @@ class Xcomfort():
             self.parseSwitch(data, device)
         elif deviceType == Light:
             self.parseLight(data, device)
-        elif deviceType == Sensor and device._deviceType == 'temperature':
+        elif deviceType == Sensor and device.deviceType == 'temperature':
             self.parseSensor(data, device)
 
         self._runCallbacks(device)
 
-    def parseSensor(self, data, device):
+    @staticmethod
+    def parseSensor(data, device):
         value = Convert.bytesToDecimal(data[21:22])
         state = Convert.bytesToInt(data[24:25]) == 255
-        device._state = state
-        device._value = value
-        device._runCallbacks()
+        device.value = value
+        device.state = state
 
         return device
 
@@ -230,30 +228,30 @@ class Xcomfort():
         button = int.from_bytes(data[9:10], byteorder='big')
         button += 1
 
-        device._state = state
-        device._buttons = max(device._buttons, button)
-        device._runCallbacks()
+        device.buttons = max(device.buttons, button)
+        device.state = state
 
         self.requestStateForAllLights()
 
         return device
 
-    def parseLight(self, data, device):
+    @staticmethod
+    def parseLight(data, device):
         stateValue = Convert.bytesToInt(data[22:23])
         state = True
 
-        if (stateValue == 3):
-            device._isDimable = False
+        if stateValue == 3:
+            device.isDimable = False
 
         if stateValue < 3:
             state = False
 
-        device._state = state
-        device._brightness = stateValue
-        device._runCallbacks()
+        device.silentBrightness = stateValue
+        device.silentState = state
+
         return device
 
-    def sendDimCommand(self, serial, dim):
+    def _sendDimCommand(self, serial, dim):
         data = bytearray()
         data += b'\x5a'
         data += b'\x19'
@@ -284,7 +282,7 @@ class Xcomfort():
 
         return data
 
-    def sendCommand(self, serial, state):
+    def _sendCommand(self, serial, state):
         data = bytearray()
         data += b'\x5a'
         data += b'\x17'
