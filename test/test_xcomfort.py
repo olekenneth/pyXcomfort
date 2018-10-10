@@ -27,23 +27,23 @@ class TestXcomfort(unittest.TestCase):
     def test_sendDimCommand(self):
         serial = b'\xc5\xc4\x55\x00'
         state = b'\xF0'
-        command = self.instance.sendDimCommand(serial, state)
+        command = self.instance._sendDimCommand(serial, state)
         self.assertEqual(command, bytearray(b'\x5a\x19\x1b\x5a\x00\x15\x12\x82\x07\x00\x80\x00\x00\x00\x00\xc5\xc4U\x00\x01\x00\xf0\xbc\xd4\xa5'))
 
     def test_sendCommand(self):
         serial = b'\xc5\xc4\x55\x00'
         state = b'\x50'
-        command = self.instance.sendCommand(serial, state)
+        command = self.instance._sendCommand(serial, state)
         self.assertEqual(command, bytearray(b'\x5a\x17\x1b\x50\x00\x13\x1e\x82\x07\x00\x80\x00\x00\x00\x00\xc5\xc4U\x00\x00\xf8\x15\xa5'))
 
         serial = Convert.intToBytes(2125309, byteorder='little')
         state = b'\x50'
-        command = self.instance.sendCommand(serial, state)
+        command = self.instance._sendCommand(serial, state)
         self.assertEqual(Convert.bytesToHex(command, 'little'), '0x5a171b5000131e8207008000000000fd6d2000003279a5')
 
         serial = Convert.intToBytes(2168571, byteorder='little')
         state = b'\x50'
-        command = self.instance.sendCommand(serial, state)
+        command = self.instance._sendCommand(serial, state)
         self.assertEqual(Convert.bytesToHex(command, 'little'), '0x5a171b5000131e8207008000000000fb162100002682a5')
 
     def test_parseType(self):
@@ -58,8 +58,8 @@ class TestXcomfort(unittest.TestCase):
     def test_parseSerial(self):
         data = bytearray(b'\x5a\x1b\x03\x55\x00\x13\x17\x10\x04\x01\xfd\x6d\x20\x00\x00\x5b\x00\x00E\xbe\x00\xa5')
         parsedType = self.instance.parseType(data)
-        serial = self.instance.parseSerial(data, parsedType)
-        self.assertEqual(2125309, serial)
+        device = self.instance.parseSerial(data, parsedType)
+        self.assertEqual(2125309, device.serial)
 
     def test_parseSensor(self):
         data = bytearray(b'Z \x03c\x00\x18\x18"\x04\x00\x14\xd0\x1f\x00\x00\xc5\xc4U\x00\x17\x00\xd5\x00\xff\xff\xf3\xa4\x89\xdb\x17\xfd\xa5')
@@ -185,7 +185,7 @@ class TestXcomfort(unittest.TestCase):
         def sendCommandMock(serialAsByte, state):
             self.assertEqual(serialAsByte, serial)
 
-        self.instance.sendCommand = sendCommandMock
+        self.instance._sendCommand = sendCommandMock
         self.instance.setState(serial, True)
         self.instance.setState(serial, False)
 
@@ -196,7 +196,7 @@ class TestXcomfort(unittest.TestCase):
             self.assertEqual(state, False)
 
         self.instance.setState = setStateMock
-        self.instance.sendDimCommand = sendDimCommandMock
+        self.instance._sendDimCommand = sendDimCommandMock
         self.instance.setBrightness(bytearray(), 255)
         self.instance.setBrightness(bytearray(), 0)
 

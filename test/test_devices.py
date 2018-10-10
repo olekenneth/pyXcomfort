@@ -7,7 +7,7 @@ class XcomfortMock(unittest.TestCase):
     def setBrightness(self, serial, value):
         self.assertEqual(value > 0, True)
 
-class TestConvert(unittest.TestCase):
+class TestDevices(unittest.TestCase):
     def test_device(self):
         d = Device()
         self.assertEqual(d.state, False)
@@ -33,3 +33,10 @@ class TestConvert(unittest.TestCase):
         l._isDimable = False
         with self.assertRaises(NotImplementedError):
             l.brightness = 50
+
+    def test_silentLight(self):
+        l = Light()
+        l.state = True
+        l.brightness = 50
+        self.assertEqual(l.silentState, True)
+        self.assertEqual(l.silentBrightness, 50)
