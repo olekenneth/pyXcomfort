@@ -1,3 +1,8 @@
-attrs==17.4.0
+attrs==18.1.0
 PyCRC==1.21
 pyserial==3.4
+black==19.3b0
+click==6.5
+toml==0.9.4
+appdirs==1.4
+pre-commit==1.18.3

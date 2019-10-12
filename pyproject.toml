@@ -1,0 +1,5 @@
+# this is an example Black configuration
+
+[tool.black]
+line-length = 88
+target-version = ['py36']
