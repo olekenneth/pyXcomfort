@@ -1,6 +1,15 @@
 repos:
--   repo: https://github.com/ambv/black
+-   repo: https://github.com/psf/black
     rev: stable
     hooks:
-    - id: black
-      language_version: python3.6
+      - id: black
+        language_version: python3
+-   repo: local
+    hooks:
+      - id: system
+        name: PyLint
+        entry: python3 -m pylint
+        language: system
+        exclude: '^test\/|^integrations\/'
+        args: ['--rcfile', '.pylint.rc', '--errors-only']
+        files: \.py$
