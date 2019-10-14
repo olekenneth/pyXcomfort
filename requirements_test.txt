@@ -1,7 +1,12 @@
-attrs==17.4.0
-pytest==3.5.0
+attrs==18.1.0
 PyCRC==1.21
-pytest-cov==2.5.1
 pyserial==3.4
+black==19.3b0
+click==6.5
+toml==0.9.4
+appdirs==1.4
+pre-commit==1.18.3
+pylint==2.4.2
+pytest==3.5.0
+pytest-cov==2.5.1
 python-coveralls==2.9.1
-pylint==1.8.4

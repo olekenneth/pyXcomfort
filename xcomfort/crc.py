@@ -1,6 +1,7 @@
 from PyCRC.CRC16Kermit import CRC16Kermit
 from xcomfort.convert import Convert
 
+
 class Crc:
     @staticmethod
     def calc(data):
