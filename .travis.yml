@@ -1,5 +1,6 @@
 language: python
 python:
+  - '3.7'
   - '3.6'
   - '3.5'
   - '3.4'
@@ -10,6 +11,7 @@ install:
   - pip install -r requirements_test.txt
 
 script:
+  - python -m black --check .
   - python -m pytest test/ --doctest-modules -v --cov xcomfort --cov-report term-missing
   - python -m pylint --errors-only --rcfile .pylint.rc xcomfort/*
 
