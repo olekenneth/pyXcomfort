@@ -5,19 +5,19 @@ For more details about this platform, please refer to the documentation at
 https://github.com/olekenneth/pyXcomfort
 """
 from threading import Timer
-from homeassistant.const import (
-    CONF_SWITCHES, CONF_TIMEOUT)
+from homeassistant.const import CONF_SWITCHES, CONF_TIMEOUT
 from homeassistant.components.binary_sensor import BinarySensorDevice
 
-CONF_SERIAL = 'serial'
-DATA_XCOMFORT = 'xcomfort'
+CONF_SERIAL = "serial"
+DATA_XCOMFORT = "xcomfort"
 
 TIMEOUT = 240
+
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Setup the Xcomfort Light platform."""
 
-    print('hei', config)
+    print("hei", config)
     xcomfort = hass.data[DATA_XCOMFORT]
 
     add_devices(XcomfortSwitch(switch) for switch in xcomfort.switches)

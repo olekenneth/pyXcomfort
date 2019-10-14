@@ -1,18 +1,19 @@
 from xcomfort.convert import Convert
 
-class Device():
+
+class Device:
     def __init__(self, xcomfort=None):
         self._state = False
         self._serial = 0
         self._serialAsBytes = bytearray()
-        self._name = ''
+        self._name = ""
         self._xcomfort = xcomfort
         self._callbacks = []
 
     def __repr__(self):
-        return '<xcomfort.devices.{0} object serial {1}>'.format(
-            self.__class__.__name__,
-            self._serial)
+        return "<xcomfort.devices.{0} object serial {1}>".format(
+            self.__class__.__name__, self._serial
+        )
 
     def runCallbacks(self):
         for callback in self._callbacks:
@@ -40,16 +41,17 @@ class Device():
     @serial.setter
     def serial(self, value):
         self._serial = value
-        self._serialAsBytes = Convert.intToBytes(value, byteorder='little', length=4)
+        self._serialAsBytes = Convert.intToBytes(value, byteorder="little", length=4)
 
     @property
     def serialAsBytes(self):
         return self._serialAsBytes
 
+
 class Sensor(Device):
     def __init__(self, xcomfort=None):
         super().__init__(xcomfort)
-        self._deviceType = ''
+        self._deviceType = ""
         self._value = 0
 
     @property
@@ -77,6 +79,7 @@ class Sensor(Device):
     def deviceType(self, value):
         self._deviceType = value
 
+
 class Switch(Device):
     def __init__(self, xcomfort=None):
         super().__init__(xcomfort)
@@ -98,6 +101,7 @@ class Switch(Device):
     @buttons.setter
     def buttons(self, value):
         self._buttons = value
+
 
 class Light(Device):
     def __init__(self, xcomfort=None):
@@ -153,7 +157,7 @@ class Light(Device):
     @brightness.setter
     def brightness(self, value):
         if not self.isDimable:
-            raise NotImplementedError('Cannot set brightness for a non dimable light')
+            raise NotImplementedError("Cannot set brightness for a non dimable light")
 
         state = True if value > 0 else False
         self._state = state

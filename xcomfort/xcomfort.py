@@ -6,19 +6,20 @@ from xcomfort.convert import Convert
 from xcomfort.devices import Light, Sensor, Switch
 from xcomfort.debounce import debounce
 
-class Xcomfort():
+
+class Xcomfort:
     messages = []
     startUpMessages = [
-        '5a040ba5',
-        '5a051a00a5',
-        '5a09470800000006a5',
-        '5a0444a5',
-        '5a0442a5',
-        '5a0422a5',
-        '5a053301a5',
-        '5a051a01a5',
-        '5a0634ffffa5',
-        '5a0431a55a0436a5'
+        "5a040ba5",
+        "5a051a00a5",
+        "5a09470800000006a5",
+        "5a0444a5",
+        "5a0442a5",
+        "5a0422a5",
+        "5a053301a5",
+        "5a051a01a5",
+        "5a0634ffffa5",
+        "5a0431a55a0436a5",
     ]
 
     @property
@@ -30,11 +31,11 @@ class Xcomfort():
         for lightConfig in lightsConfig:
             light = Light(self)
             if isinstance(lightConfig, (OrderedDict, dict)):
-                serial = lightConfig['serial']
-                name = lightConfig['name'] or 'lamp-' + str(serial)
+                serial = lightConfig["serial"]
+                name = lightConfig["name"] or "lamp-" + str(serial)
             elif isinstance(lightConfig, int):
                 serial = lightConfig
-                name = 'lamp-' + str(serial)
+                name = "lamp-" + str(serial)
             light.name = name
             light.serial = serial
             self._appendDevice(light)
@@ -53,19 +54,19 @@ class Xcomfort():
         for switchConfig in switchesConfig:
             switch = Switch(self)
             if isinstance(switchConfig, (OrderedDict, dict)):
-                serial = switchConfig['serial']
-                name = switchConfig['name'] or 'switch-' + str(serial)
+                serial = switchConfig["serial"]
+                name = switchConfig["name"] or "switch-" + str(serial)
             elif isinstance(switchConfig, int):
                 serial = switchConfig
-                name = 'switch-' + str(serial)
+                name = "switch-" + str(serial)
             switch.name = name
             switch.serial = serial
             self._appendDevice(switch)
 
     def setState(self, serial, state):
         if not isinstance(state, bool):
-            raise TypeError('State should be True/False')
-        command = b'\x50' if state is True else b'\x51'
+            raise TypeError("State should be True/False")
+        command = b"\x50" if state is True else b"\x51"
         self._sendCommand(serial, command)
 
     def setBrightness(self, serial, brightness):
@@ -76,7 +77,7 @@ class Xcomfort():
             self.setState(serial, False)
 
     def requestState(self, serial):
-        self._sendCommand(serial, b'\x70')
+        self._sendCommand(serial, b"\x70")
 
     @debounce(3)
     def requestStateForAllLights(self):
@@ -85,7 +86,9 @@ class Xcomfort():
 
     def find(self, device):
         deviceType = type(device)
-        return next((j for j in self.devices[deviceType] if j.serial == device.serial), None)
+        return next(
+            (j for j in self.devices[deviceType] if j.serial == device.serial), None
+        )
 
     def _appendDevice(self, device):
         deviceType = type(device)
@@ -108,19 +111,12 @@ class Xcomfort():
         self._callbacks[Sensor].append(callback)
 
     def __init__(self, serialPort=None, devicePath=None):
-        self.devices = {
-            Light: [],
-            Sensor: [],
-            Switch: []
-        }
-        self._callbacks = {
-            Light: [],
-            Sensor: [],
-            Switch: []
-        }
+        self.devices = {Light: [], Sensor: [], Switch: []}
+        self._callbacks = {Light: [], Sensor: [], Switch: []}
 
         if devicePath and not serialPort:
             import serial
+
             serialPort = serial.Serial(devicePath, 115200)
 
         if serialPort:
@@ -130,18 +126,18 @@ class Xcomfort():
                 self.messages.append(bytearray(bytes.fromhex(message)))
 
             self.readerShutdown = False
-            self.readerThread = threading.Thread(target=self.read, name='rx')
+            self.readerThread = threading.Thread(target=self.read, name="rx")
             self.readerThread.daemon = True
             self.readerThread.start()
 
             self.writerShutdown = False
-            self.writerThread = threading.Thread(target=self.write, name='tx')
+            self.writerThread = threading.Thread(target=self.write, name="tx")
             self.writerThread.daemon = True
             self.writerThread.start()
 
     def write(self):
         while not self.writerShutdown:
-            time.sleep(.01)
+            time.sleep(0.01)
             if self.messages:
                 message = self.messages.pop(0)
                 if message:
@@ -152,27 +148,27 @@ class Xcomfort():
         readBytes = bytearray()
         try:
             while not self.readerShutdown:
-                time.sleep(.01)
+                time.sleep(0.01)
                 byte = self.serialPort.read(self.serialPort.in_waiting or 1)
                 if byte:
                     readBytes += byte
-                    if byte[-1:] == b'\xa5':
+                    if byte[-1:] == b"\xa5":
                         self.parse(readBytes)
                         readBytes = bytearray()
         except Exception as ex:
-            print('Exception happen in read thread', ex)
+            print("Exception happen in read thread", ex)
 
     def parseType(self, data):
         parsedType = None
         length = data[1:2]
-        if length == b'\x1b': # switch
+        if length == b"\x1b":  # switch
             parsedType = Switch(self)
-        elif length == b'\x20': # temp. sensor
+        elif length == b"\x20":  # temp. sensor
             parsedType = Sensor(self)
-            parsedType.deviceType = 'temperature'
-        elif length == b'\x17' or length == b'\x24': # light on/off
+            parsedType.deviceType = "temperature"
+        elif length == b"\x17" or length == b"\x24":  # light on/off
             parsedType = Light(self)
-        elif length == b'\x19': # light dim
+        elif length == b"\x19":  # light dim
             parsedType = Light(self)
         return parsedType
 
@@ -187,7 +183,7 @@ class Xcomfort():
         elif deviceType == Light:
             serialAsBytes = byteArray[10:14]
 
-        serial = Convert.bytesToInt(serialAsBytes, byteorder='big')
+        serial = Convert.bytesToInt(serialAsBytes, byteorder="big")
         # device.serialAsBytes = serialAsBytes
         device.serial = serial
 
@@ -209,7 +205,7 @@ class Xcomfort():
             self.parseSwitch(data, device)
         elif deviceType == Light:
             self.parseLight(data, device)
-        elif deviceType == Sensor and device.deviceType == 'temperature':
+        elif deviceType == Sensor and device.deviceType == "temperature":
             self.parseSensor(data, device)
 
         self._runCallbacks(device)
@@ -224,8 +220,8 @@ class Xcomfort():
         return device
 
     def parseSwitch(self, data, device):
-        state = data[3:4] != bytearray(b'\x51')
-        button = int.from_bytes(data[9:10], byteorder='big')
+        state = data[3:4] != bytearray(b"\x51")
+        button = int.from_bytes(data[9:10], byteorder="big")
         button += 1
 
         device.buttons = max(device.buttons, button)
@@ -253,28 +249,28 @@ class Xcomfort():
 
     def _sendDimCommand(self, serial, dim):
         data = bytearray()
-        data += b'\x5a'
-        data += b'\x19'
-        data += b'\x1b'
-        data += b'\x5a'
-        data += b'\x00'
-        data += b'\x15'
-        data += b'\x12'
-        data += b'\x82'
-        data += b'\x07'
-        data += b'\x00'
-        data += b'\x80'
-        data += b'\x00'
-        data += b'\x00'
-        data += b'\x00'
-        data += b'\x00'
+        data += b"\x5a"
+        data += b"\x19"
+        data += b"\x1b"
+        data += b"\x5a"
+        data += b"\x00"
+        data += b"\x15"
+        data += b"\x12"
+        data += b"\x82"
+        data += b"\x07"
+        data += b"\x00"
+        data += b"\x80"
+        data += b"\x00"
+        data += b"\x00"
+        data += b"\x00"
+        data += b"\x00"
         data += serial
-        data += b'\x01'
-        data += b'\x00'
+        data += b"\x01"
+        data += b"\x00"
         data += dim
-        data += b'\x00'
-        data += b'\x00'
-        data += b'\xa5'
+        data += b"\x00"
+        data += b"\x00"
+        data += b"\xa5"
 
         data = Crc.generate(data)
 
@@ -284,26 +280,26 @@ class Xcomfort():
 
     def _sendCommand(self, serial, state):
         data = bytearray()
-        data += b'\x5a'
-        data += b'\x17'
-        data += b'\x1b'
+        data += b"\x5a"
+        data += b"\x17"
+        data += b"\x1b"
         data += state
-        data += b'\x00'
-        data += b'\x13'
-        data += b'\x1e'
-        data += b'\x82'
-        data += b'\x07'
-        data += b'\x00'
-        data += b'\x80'
-        data += b'\x00'
-        data += b'\x00'
-        data += b'\x00'
-        data += b'\x00'
+        data += b"\x00"
+        data += b"\x13"
+        data += b"\x1e"
+        data += b"\x82"
+        data += b"\x07"
+        data += b"\x00"
+        data += b"\x80"
+        data += b"\x00"
+        data += b"\x00"
+        data += b"\x00"
+        data += b"\x00"
         data += serial
-        data += b'\x00'
-        data += b'\x00'
-        data += b'\x00'
-        data += b'\xa5'
+        data += b"\x00"
+        data += b"\x00"
+        data += b"\x00"
+        data += b"\xa5"
 
         data = Crc.generate(data)
 

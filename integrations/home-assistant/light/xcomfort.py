@@ -4,11 +4,10 @@ Support for Xcomfort lights and wall switches.
 For more details about this platform, please refer to the documentation at
 https://github.com/olekenneth/pyXcomfort
 """
-from homeassistant.components.light import (
-    ATTR_BRIGHTNESS, SUPPORT_BRIGHTNESS, Light)
+from homeassistant.components.light import ATTR_BRIGHTNESS, SUPPORT_BRIGHTNESS, Light
 
 XCOMFORT_SUPPORT_BRIGHTNESS = SUPPORT_BRIGHTNESS
-DATA_XCOMFORT = 'xcomfort'
+DATA_XCOMFORT = "xcomfort"
 
 TIMEOUT = 240
 
