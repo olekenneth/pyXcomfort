@@ -6,10 +6,17 @@ repos:
         language_version: python3
 -   repo: local
     hooks:
-      - id: system
+      - id: pylint
         name: PyLint
         entry: python3 -m pylint
         language: system
         exclude: '^test\/|^integrations\/'
         args: ['--rcfile', '.pylint.rc', '--errors-only']
+        files: \.py$
+      - id: pytest
+        name: PyTest
+        entry: python3 -m pytest
+        language: system
+        pass_filenames: false
+        exclude: '^test\/|^integrations\/'
         files: \.py$
