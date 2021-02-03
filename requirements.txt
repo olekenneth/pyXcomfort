@@ -8,4 +8,4 @@ appdirs==1.4
 pre-commit==1.18.3
 pylint==2.5.0
 pytest==3.5.0
-pytest-cov==2.5.1
+pytest-cov==2.11.1
