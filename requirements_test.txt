@@ -2,7 +2,7 @@ attrs==20.3.0
 pythoncrc==1.21
 pyserial==3.5
 black==19.3b0
-click==6.5
+click==7.1.2
 toml==0.9.4
 appdirs==1.4
 pre-commit==1.18.3
