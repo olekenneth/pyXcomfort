@@ -1,6 +1,6 @@
 attrs==20.3.0
 pythoncrc==1.21
-pyserial==3.4
+pyserial==3.5
 black==19.3b0
 click==6.5
 toml==0.9.4
