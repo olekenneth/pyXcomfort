@@ -6,6 +6,6 @@ click==6.5
 toml==0.9.4
 appdirs==1.4
 pre-commit==1.18.3
-pylint==2.4.2
+pylint==2.5.0
 pytest==3.5.0
 pytest-cov==2.5.1
