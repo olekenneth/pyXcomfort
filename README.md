@@ -8,6 +8,8 @@ It requires the RS-232 programming interface.
 
 This repository is not associated with Moeller Eaton, Home Assistant or other [integrations](/integrations).
 
+If you are running [Home Assistant Supervisor](https://www.home-assistant.io/hassio/) you can use the [XComfort HA Addon](https://github.com/olekenneth/hassio-addons)
+
 ## How to use
 
 ```bash
