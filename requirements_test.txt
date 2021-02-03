@@ -1,4 +1,4 @@
-attrs==18.1.0
+attrs==20.3.0
 pythoncrc==1.21
 pyserial==3.4
 black==19.3b0
