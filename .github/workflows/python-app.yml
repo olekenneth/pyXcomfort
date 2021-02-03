@@ -1,0 +1,32 @@
+name: Python application
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements_test.txt ]; then pip install -r requirements_test.txt; fi
+    - name: Run Black
+      run: |
+        python -m black --check .
+    - name: Run pytest with coverage report
+      run: |
+        python -m pytest test/ --doctest-modules -v --cov xcomfort --cov-report term-missing
+    - name: Run pylint
+      run: |
+        python -m pylint --errors-only --rcfile .pylint.rc xcomfort/*
