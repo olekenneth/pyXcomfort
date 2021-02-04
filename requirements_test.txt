@@ -3,7 +3,7 @@ pythoncrc==1.21
 pyserial==3.5
 black==19.3b0
 click==7.1.2
-toml==0.9.4
+toml==0.10.2
 appdirs==1.4
 pre-commit==1.18.3
 pylint==2.4.2
