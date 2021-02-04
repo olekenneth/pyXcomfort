@@ -30,3 +30,7 @@ jobs:
     - name: Run pylint
       run: |
         python -m pylint --errors-only --rcfile .pylint.rc xcomfort/*
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
