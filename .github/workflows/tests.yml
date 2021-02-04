@@ -26,11 +26,11 @@ jobs:
         python -m black --check .
     - name: Run pytest with coverage report
       run: |
-        python -m pytest test/ --doctest-modules -v --cov xcomfort --cov-report term-missing
+        python -m coverage run --source=xcomfort -m pytest test --doctest-modules -v
     - name: Run pylint
       run: |
         python -m pylint --errors-only --rcfile .pylint.rc xcomfort/*
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload coverage data to Coveralls
+      run: coveralls
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
