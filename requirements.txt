@@ -7,5 +7,5 @@ toml==0.10.2
 appdirs==1.4.4
 pre-commit==1.18.3
 pylint==2.5.0
-pytest==3.5.0
+pytest==6.2.2
 pytest-cov==2.5.1
