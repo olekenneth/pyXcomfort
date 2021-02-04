@@ -4,5 +4,4 @@ black==19.3b0
 pre-commit==1.18.3
 pylint==2.4.2
 pytest==6.2.2
-pytest-cov==2.11.1
-python-coveralls==2.9.3
+coveralls==3.0.0
