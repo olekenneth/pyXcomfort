@@ -1,6 +1,6 @@
 pythoncrc==1.21
 pyserial==3.5
-black==21.5b1
+black==21.5b2
 pre-commit==2.13.0
 pylint==2.8.3
 pytest==6.2.4
