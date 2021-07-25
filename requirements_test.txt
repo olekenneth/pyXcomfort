@@ -4,4 +4,4 @@ black==21.6b0
 pre-commit==2.13.0
 pylint==2.9.3
 pytest==6.2.4
-coveralls==3.1.0
+coveralls==3.2.0
