@@ -4,7 +4,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/olekenneth/pyXcomfort/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/olekenneth/pyXcomfort?targetFile=requirements.txt)
 
 This is an **unofficial** Python library for controlling Moeller Eaton Xcomfort lights.
-It requires the RS-232 programming interface. 
+It requires the Xcomfort CRSZ-00/01 RS-232 programming interface. 
 
 This repository is not associated with Moeller Eaton, Home Assistant or other [integrations](/integrations).
 
