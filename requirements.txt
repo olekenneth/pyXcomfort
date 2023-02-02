@@ -1,4 +1,4 @@
 pythoncrc==1.21
 pyserial==3.5
-pre-commit==3.0.2
+pre-commit==3.0.3
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
