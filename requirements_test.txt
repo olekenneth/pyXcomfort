@@ -3,5 +3,5 @@ pyserial==3.5
 black==23.12.1
 pre-commit==3.6.0
 pylint==3.0.2
-pytest==8.1.1
+pytest==8.2.0
 coveralls==3.3.1
