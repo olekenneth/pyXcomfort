@@ -1,5 +1,6 @@
 import threading
 import time
+import uuid
 from collections import OrderedDict
 from xcomfort.crc import Crc
 from xcomfort.convert import Convert
@@ -36,6 +37,8 @@ class Xcomfort:
             elif isinstance(lightConfig, int):
                 serial = lightConfig
                 name = "lamp-" + str(serial)
+            else:
+                name = "device " + str(uuid.uuid4().hex)
             light.name = name
             light.serial = serial
             self._appendDevice(light)
@@ -59,6 +62,8 @@ class Xcomfort:
             elif isinstance(switchConfig, int):
                 serial = switchConfig
                 name = "switch-" + str(serial)
+            else:
+                name = "switch " + str(uuid.uuid4().hex)
             switch.name = name
             switch.serial = serial
             self._appendDevice(switch)
@@ -182,6 +187,9 @@ class Xcomfort:
             serialAsBytes = byteArray[15:19]
         elif deviceType == Light:
             serialAsBytes = byteArray[10:14]
+        else:
+            print("Unable to detect device type")
+            return device
 
         serial = Convert.bytesToInt(serialAsBytes, byteorder="big")
         # device.serialAsBytes = serialAsBytes
