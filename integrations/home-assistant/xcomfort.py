@@ -4,6 +4,7 @@ Support for Xcomfort lights and wall switches.
 For more details about this platform, please refer to the documentation at
 https://github.com/olekenneth/pyXcomfort
 """
+
 import voluptuous as vol
 from homeassistant.const import (
     CONF_DEVICE,

@@ -4,6 +4,7 @@ Support for Xcomfort lights and wall switches.
 For more details about this platform, please refer to the documentation at
 https://github.com/olekenneth/pyXcomfort
 """
+
 from threading import Timer
 from homeassistant.const import CONF_SWITCHES, CONF_TIMEOUT
 from homeassistant.components.binary_sensor import BinarySensorDevice
