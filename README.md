@@ -1,5 +1,5 @@
 # pyXcomfort
-![Tests](https://github.com/olekenneth/pyXcomfort/workflows/Tests/badge.svg)
+[![Tests](https://github.com/olekenneth/pyXcomfort/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/olekenneth/pyXcomfort/actions/workflows/tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/olekenneth/pyXcomfort/badge.svg?branch=master)](https://coveralls.io/github/olekenneth/pyXcomfort?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/olekenneth/pyXcomfort/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/olekenneth/pyXcomfort?targetFile=requirements.txt)
 
