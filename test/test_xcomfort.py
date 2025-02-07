@@ -33,7 +33,7 @@ class TestXcomfort(unittest.TestCase):
 
     def test_sendDimCommand(self):
         serial = b"\xc5\xc4\x55\x00"
-        state = b"\xF0"
+        state = b"\xf0"
         command = self.instance._sendDimCommand(serial, state)
         self.assertEqual(
             command,
