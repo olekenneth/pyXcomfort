@@ -1,3 +1,4 @@
+import random
 import threading
 import time
 import uuid
@@ -6,7 +7,6 @@ from xcomfort.crc import Crc
 from xcomfort.convert import Convert
 from xcomfort.devices import Light, Sensor, Switch
 from xcomfort.debounce import debounce
-
 
 class Xcomfort:
     messages = []
@@ -43,6 +43,7 @@ class Xcomfort:
             light.serial = serial
             self._appendDevice(light)
             light.requestState()
+            light.requestState()
 
     @property
     def sensors(self):
@@ -73,16 +74,21 @@ class Xcomfort:
             raise TypeError("State should be True/False")
         command = b"\x50" if state is True else b"\x51"
         self._sendCommand(serial, command)
+        self._sendCommand(serial, command)
+        self._sendCommand(serial, command)
 
     def setBrightness(self, serial, brightness):
         if brightness > 1:
             command = Convert.intToBytes(brightness, length=1)
+            self._sendDimCommand(serial, command)
+            self._sendDimCommand(serial, command)
             self._sendDimCommand(serial, command)
         else:
             self.setState(serial, False)
 
     def requestState(self, serial):
         self._sendCommand(serial, b"\x70")
+        time.sleep(0.3)
 
     @debounce(3)
     def requestStateForAllLights(self):
@@ -122,7 +128,13 @@ class Xcomfort:
         if devicePath and not serialPort:
             import serial
 
-            serialPort = serial.Serial(devicePath, 115200)
+            serialPort = serial.Serial(
+                port=devicePath,
+                baudrate=115200,
+                timeout=0.05,
+                write_timeout=0.05,
+                inter_byte_timeout=None
+            )
 
         if serialPort:
             self.serialPort = serialPort
@@ -147,7 +159,6 @@ class Xcomfort:
                 message = self.messages.pop(0)
                 if message:
                     self.serialPort.write(message)
-                    time.sleep(0.5)
 
     def read(self):
         readBytes = bytearray()
@@ -263,7 +274,7 @@ class Xcomfort:
         data += b"\x5a"
         data += b"\x00"
         data += b"\x15"
-        data += b"\x12"
+        data += bytes([random.randint(0x10, 0x1F)]) # random seq
         data += b"\x82"
         data += b"\x07"
         data += b"\x00"
@@ -294,7 +305,7 @@ class Xcomfort:
         data += state
         data += b"\x00"
         data += b"\x13"
-        data += b"\x1e"
+        data += bytes([random.randint(0x10, 0x1F)]) # random seq
         data += b"\x82"
         data += b"\x07"
         data += b"\x00"
@@ -311,6 +322,9 @@ class Xcomfort:
 
         data = Crc.generate(data)
 
-        self.messages.append(data)
+        if state == b"\x70":
+            self.messages.append(data)
+        else:
+            self.messages.insert(0, data)
 
         return data
