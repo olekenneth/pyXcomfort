@@ -159,6 +159,8 @@ class Xcomfort:
                 message = self.messages.pop(0)
                 if message:
                     self.serialPort.write(message)
+                    self.serialPort.flush()
+                    time.sleep(0.005)
 
     def read(self):
         readBytes = bytearray()
