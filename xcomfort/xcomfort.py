@@ -8,6 +8,7 @@ from xcomfort.convert import Convert
 from xcomfort.devices import Light, Sensor, Switch
 from xcomfort.debounce import debounce
 
+
 class Xcomfort:
     messages = []
     startUpMessages = [
@@ -133,7 +134,7 @@ class Xcomfort:
                 baudrate=115200,
                 timeout=0.05,
                 write_timeout=0.05,
-                inter_byte_timeout=None
+                inter_byte_timeout=None,
             )
 
         if serialPort:
@@ -276,7 +277,7 @@ class Xcomfort:
         data += b"\x5a"
         data += b"\x00"
         data += b"\x15"
-        data += bytes([random.randint(0x10, 0x1F)]) # random seq
+        data += bytes([random.randint(0x10, 0x1F)])  # random seq
         data += b"\x82"
         data += b"\x07"
         data += b"\x00"
@@ -307,7 +308,7 @@ class Xcomfort:
         data += state
         data += b"\x00"
         data += b"\x13"
-        data += bytes([random.randint(0x10, 0x1F)]) # random seq
+        data += bytes([random.randint(0x10, 0x1F)])  # random seq
         data += b"\x82"
         data += b"\x07"
         data += b"\x00"
