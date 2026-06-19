@@ -47,7 +47,7 @@ class TestXcomfort(unittest.TestCase):
             ),
         )
 
-    @patch("xcomfort.xcomfort.random.randint", return_value=0x1e)
+    @patch("xcomfort.xcomfort.random.randint", return_value=0x1E)
     def test_sendCommand(self, mock_randint):
         serial = b"\xc5\xc4\x55\x00"
         state = b"\x50"
