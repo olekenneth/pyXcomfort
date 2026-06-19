@@ -1,10 +1,14 @@
 import unittest
+from unittest.mock import patch
 from xcomfort.xcomfort import *
 
 
 class SerialPortMock(unittest.TestCase):
     def write(self, message):
         self.assertEqual(type(message), bytearray)
+
+    def flush(self):
+        pass
 
     def read(self, length):
         self.assertEqual(length, 1)
@@ -31,7 +35,8 @@ class TestXcomfort(unittest.TestCase):
             serial.serialutil.SerialException, Xcomfort, None, "/dev/test"
         )
 
-    def test_sendDimCommand(self):
+    @patch("xcomfort.xcomfort.random.randint", return_value=0x12)
+    def test_sendDimCommand(self, mock_randint):
         serial = b"\xc5\xc4\x55\x00"
         state = b"\xf0"
         command = self.instance._sendDimCommand(serial, state)
@@ -42,7 +47,8 @@ class TestXcomfort(unittest.TestCase):
             ),
         )
 
-    def test_sendCommand(self):
+    @patch("xcomfort.xcomfort.random.randint", return_value=0x1e)
+    def test_sendCommand(self, mock_randint):
         serial = b"\xc5\xc4\x55\x00"
         state = b"\x50"
         command = self.instance._sendCommand(serial, state)
